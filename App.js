@@ -1,18 +1,24 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, ScrollView, View } from 'react-native';
 import AddEntry from './component/AddEntry'
+import { createStore } from 'redux'
+import { Provider } from 'react-redux'
+import reducer from './reducers'
 
 export default class App extends React.Component {
-  componentDidMount(){
+  componentDidMount() {
     console.log('BEFORE')
     debugger
     console.log('AFTER')
   }
+
   render() {
     return (
-      <View style={styles.container}>
-        <AddEntry />
-      </View>
+      <Provider store={createStore(reducer)}>
+        <ScrollView>
+          <AddEntry />
+        </ScrollView>
+      </Provider>
     );
   }
 }

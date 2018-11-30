@@ -4,6 +4,12 @@ import { getMetricMetaInfo, timeToString } from '../utils/helpers'
 import UdaciSlider from './UdaciSlider'
 import UdaciSteppers from './UdaciSteppers'
 import DateHeader from './DateHeader'
+import { Ionicons } from '@expo/vector-icons'
+import TextButton from './TextButton'
+import { submitEntry, removeEntry } from '../utils/api'
+import { connect } from 'react-redux'
+import { receiveEntries, addEntry } from '../actions'
+import { getDailyReminderValue } from '../utils/helpers'
 
 function SubmitBtn({ onPress }) {
     return (
@@ -16,7 +22,7 @@ function SubmitBtn({ onPress }) {
     )
 }
 
-export default class AddEntry extends Component {
+class AddEntry extends Component {
     state = {
         run: 0,
         bike: 0,
@@ -26,21 +32,19 @@ export default class AddEntry extends Component {
     }
 
     increment = (metric) => {
-        const { step, max } = getMetricMetaInfo(metric)
-
-        this.setState(state => {
-            const count = state.metric + step
+        const { max, step } = getMetricMetaInfo(metric)
+        this.setState((state) => {
+            const count = state[metric] + step
             return {
                 ...state,
-                [metric]: count > max ? max : count
+                [metric]: count < 0 ? 0 : count,
             }
         })
     }
 
-    dencrement = (metric) => {
-
-        this.setState(state => {
-            const count = state.metric - getMetricMetaInfo(metric).step
+    decrement = (metric) => {
+        this.setState((state) => {
+            const count = state[metric] - getMetricMetaInfo(metric).step
             return {
                 ...state,
                 [metric]: count < 0 ? 0 : count
@@ -58,7 +62,9 @@ export default class AddEntry extends Component {
         const key = timeToString()
         const entry = this.state
 
-        // update redux
+        this.props.dispatch(addEntry({
+            [key]:entry
+        }))
 
         this.setState(() => ({
             run: 0,
@@ -70,14 +76,40 @@ export default class AddEntry extends Component {
 
         // navigate to home
 
-        // save on DB
+        submitEntry({key, entry})
 
         // Clear the local notification
+    }
+
+    rest = () => {
+        const key = timeToString()
+
+        this.props.dispatch(addEntry({
+            [key]: getDailyReminderValue()
+        }))
+
+        // go home
+
+        removeEntry(key)
     }
 
     render() {
 
         const metainfo = getMetricMetaInfo()
+
+        if (this.props.alreadyLogged) {
+            return (
+                <View>
+                    <Ionicons
+                        name='md-happy'
+                        size={100} />
+                    <Text>You already logged information for today</Text>
+                    <TextButton onPress={this.rest}>
+                        Rest
+                    </TextButton>
+                </View>
+            )
+        }
 
         return (
             <View>
@@ -96,7 +128,7 @@ export default class AddEntry extends Component {
                                     {...rest}
                                 />
                                 : <UdaciSteppers
-                                    value='steppers'
+                                    value={value}
                                     onIncrement={() => this.increment(key)}
                                     onDecrement={() => this.dencrement(key)}
                                     {...rest}
@@ -110,3 +142,13 @@ export default class AddEntry extends Component {
         )
     }
 }
+
+function mapStateToProps (state){
+    const key = timeToString()
+
+    return{
+        alreadyLogged: state[key] && typeof state[key].today === 'undefined'
+    }
+}
+
+export default connect (mapStateToProps)(AddEntry)
