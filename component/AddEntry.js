@@ -15,7 +15,7 @@ import { purple, white } from '../utils/colors'
 function SubmitBtn({ onPress }) {
     return (
         <TouchableOpacity
-            style={Platform.OS === 'ios' ? styles.iosSubmitBtn : styles.AndroidSubmitBtn}
+            style={Platform.OS === 'ios' ? styles.iosSubmitBtn : styles.androidSubmitBtn}
             onPress={onPress}>
             <Text style={styles.submitBtnText}>
                 SUBMIT
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
         marginLeft: 40,
         marginRight: 40,
     },
-    AndroidSubmitBtn: {
+    androidSubmitBtn: {
         backgroundColor: purple,
         padding: 10,
         paddingLeft: 30,
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginLeft: 30,
         marginRight: 30,
-        marginTop:30
+        paddingTop:20
     },
 })
 
