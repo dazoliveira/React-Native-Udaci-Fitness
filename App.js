@@ -15,7 +15,7 @@ export default class App extends React.Component {
   render() {
     return (
       <Provider store={createStore(reducer)}>
-        <ScrollView>
+        <ScrollView style={{flex:1}}>
           <AddEntry />
         </ScrollView>
       </Provider>
