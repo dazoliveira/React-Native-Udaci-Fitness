@@ -77,5 +77,3 @@ function mapDispatchToProps(dispatch, { navigation }) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(EntryDetail)
-
-export default EntryDetail
